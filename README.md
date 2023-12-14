@@ -33,6 +33,14 @@ Here are just some ideas to explore with AnyQuest PyAQ:
     - LLM operations
     - Performance optimization and parallelism
 
+Make sure to check out examples in the examples/apps directory: 
+
+- enrich.yml - enrich sales leads by searching the web 
+- extract.yml - extract contact information from emails 
+- investments.yml - generate investment advice based on a market report 
+- rag.yml - answer a question using information in a pdf document 
+- qna.yml - answer multiple questions by spawning several workers 
+
 For more information visit us at https://anyquest.ai
 
 ## Installation 
