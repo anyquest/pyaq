@@ -1,14 +1,15 @@
 ## About 
 
 PyAQ is an open-source reference implementation of the semantic broker, 
-a platform for cognitive applications using large language models. 
+a platform for [cognitive applications](https://www.anyquest.ai/blog/cognitive-applications-and-semantic-brokers/) 
+using large language models. 
 
 Unlike interactive GPT chatbots and copilots, cognitive applications can run entirely unattended. 
 They do not sacrifice precision for speed and can run longer to process more data, use different types 
 of larger AI models, or launch long-running jobs via connected enterprise applications and robotic systems.
 
 By releasing AnyQuest PyAQ as open source, we hope to stimulate innovation in the broader generative AI community. 
-Until now, the focus of the AI community has been on building bigger and better models. 
+Until now, the focus of the community has been on building bigger and better models. 
 But models do not deliver value. Value is delivered by applications enabled by these models.
 
 Here are just some ideas to explore with AnyQuest PyAQ:
