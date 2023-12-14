@@ -48,7 +48,11 @@ GOOGLE_CSE_CX=<Your Google Programmable Search Engine ID>
 GOOGLE_CSE_KEY=<Your Google Programmable Search Engine API Key>
 ```
 
-The OpenAI API key is required since most examples depend on it. The other values are only needed if you intend to run examples that use the web tool or an Anthropic model.
+The OpenAI API key is required since most examples depend on it. 
+Google CSE settings are required by the web tool. 
+If you do not have Anthropic or Azure API keys, you can still run all 
+examples but will need to replace the corresponding models with the 
+ones provided by OpenAI. 
 
 ## Examples
 
