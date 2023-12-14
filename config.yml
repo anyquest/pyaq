@@ -9,9 +9,9 @@ providers:
     endpoint: https://api.openai.com/v1/
   azure:
     key: ${AZURE_API_KEY}
+    version: ${AZURE_API_VERSION}
     endpoint: ${AZURE_ENDPOINT}
     deployment: ${AZURE_DEPLOYMENT}
-    version: ${AZURE_VERSION}
   anthropic:
     key: ${ANTHROPIC_API_KEY}
     endpoint: https://api.anthropic.com/v1/

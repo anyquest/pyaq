@@ -38,6 +38,12 @@ At the root folder of the source tree, create a file named .env containing the f
 ```
 OPENAI_API_KEY=<Your OpenAI API key>
 ANTHROPIC_API_KEY=<Your Anthropic API key>
+
+AZURE_API_KEY=<Your Azure API key>
+AZURE_API_VERSION=<Azure API version>
+AZURE_DEPLOYMENT=<Azure Model deployment>
+AZURE_ENDPOINT=<Azure endpoint>
+
 GOOGLE_CSE_CX=<Your Google Programmable Search Engine ID>
 GOOGLE_CSE_KEY=<Your Google Programmable Search Engine API Key>
 ```
