@@ -3,6 +3,8 @@
 PyAQ is an open-source reference implementation of the semantic broker, 
 a platform for cognitive applications using large language models. 
 
+For more information visit us at https://anyquest.ai
+
 ## Installation 
 
 ### Operating System 
