@@ -8,6 +8,16 @@ Unlike interactive GPT chatbots and copilots, cognitive applications can run ent
 They do not sacrifice precision for speed and can run longer to process more data, use different types 
 of larger AI models, or launch long-running jobs via connected enterprise applications and robotic systems.
 
+Make sure to check out examples in the examples/apps directory:
+
+- enrich.yml - enrich sales leads by searching the web
+- extract.yml - extract contact information from emails
+- investments.yml - generate investment advice based on a market report
+- rag.yml - answer a question using information in a pdf document
+- qna.yml - answer multiple questions by spawning several workers
+
+For more information visit us at https://anyquest.ai
+
 By releasing AnyQuest PyAQ as open source, we hope to stimulate innovation in the broader generative AI community. 
 Until now, the focus of the community has been on building bigger and better models. 
 But models do not deliver value. Value is delivered by applications enabled by these models.
@@ -33,15 +43,6 @@ Here are just some ideas to explore with AnyQuest PyAQ:
     - LLM operations
     - Performance optimization and parallelism
 
-Make sure to check out examples in the examples/apps directory: 
-
-- enrich.yml - enrich sales leads by searching the web 
-- extract.yml - extract contact information from emails 
-- investments.yml - generate investment advice based on a market report 
-- rag.yml - answer a question using information in a pdf document 
-- qna.yml - answer multiple questions by spawning several workers 
-
-For more information visit us at https://anyquest.ai
 
 ## Installation 
 
