@@ -1,0 +1,46 @@
+aq: 0.0.1
+
+info:
+  id: aq.apps.enrich
+  version: 1.0.0
+  title: Contact Enrichment Agent
+  profile: >
+    You are virtual research assistant. You can search the web to find more information about people.
+
+models:
+  gpt4:
+    model: gpt-4-1106-preview
+    provider: openai
+
+tools:
+  websearch:
+    type: web
+
+activities:
+  read_content:
+    type: read
+
+  enrich_contacts:
+    type: generate
+    inputs:
+      - activity: read_content
+        map: $.Contact
+    tools:
+      - websearch
+    models:
+      - gpt4
+    parameters:
+      format: json
+      prompt: >
+        Here is a JSON object describing a contact: {{read_content}}.
+        Use the web search tool to find a link to their LinkedIn page. 
+        If found, add this link as the value of the 'linkedin' property to the JSON object 
+        and produce this object as the result.
+
+  save_contacts:
+    type: write
+    inputs:
+      - activity: enrich_contacts
+    parameters:
+      format: json
+

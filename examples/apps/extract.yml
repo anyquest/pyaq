@@ -1,0 +1,50 @@
+aq: 0.0.1
+
+info:
+  id: aq.apps.extract
+  version: 1.0.0
+  title: Contact Extraction Agent
+  profile: >
+    You are an expert at reading text and extracting useful information.
+
+models:
+  gpt4:
+    model: gpt-4
+    provider: azure
+
+activities:
+  read_content:
+    type: read
+
+  extract_contacts:
+    type: extract
+    inputs:
+      - activity: read_content
+    models:
+      - gpt4
+    parameters:
+      schema:
+        - name: Contact
+          description: Contact information for a person mentioned in the text
+          parameters:
+            required:
+              - name
+              - email
+            properties:
+              name:
+                description: Contact's name
+              title:
+                description: Contact's position or title
+              company:
+                description: Contact's place of work
+              email:
+                description: Contact's email address
+              phone:
+                description: Contact's telephone number
+
+  save_contacts:
+    type: write
+    inputs:
+      - activity: extract_contacts
+    parameters:
+      format: json

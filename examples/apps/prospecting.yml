@@ -1,0 +1,113 @@
+aq: 0.0.1
+
+info:
+  id: aq.apps.prospecting
+  version: 1.0.0
+  title: Sales Prospecting Agent
+  profile: >
+    You are a sales and marketing research professional. You help research leads and draft prospecting emails.
+
+models:
+  gpt4:
+    model: gpt-4-1106-preview
+    provider: openai
+  claude:
+    model: claude-2.1
+    provider: anthropic
+
+tools:
+  websearch:
+    type: web
+  crm:
+    type: rest
+    parameters:
+      endpoint: http://localhost:8000
+
+activities:
+  read_request:
+    type: read
+
+  identify_prospect:
+    type: generate
+    inputs:
+      - activity: read_request
+    tools:
+      - crm
+      - websearch
+    models:
+      - gpt4
+    parameters:
+      temperature: 0.0
+      format: json
+      prompt: |
+        Use the tools at your disposal to map this IP address {{read_request.ip_address}}
+        to company information and geolocation details. Return the results in JSON format. 
+        Visit the company website and summarize their value proposition. Add this 
+        information to the company information block as the value of the 'about' property
+        in the corresponding JSON object. 
+
+  summarize_interests:
+    type: generate
+    inputs:
+      - activity: read_request
+    tools:
+      - websearch
+    models:
+      - gpt4
+    parameters:
+      prompt: |
+        Here is a list of pages visited by a prospect on our website:
+        {{read_request.pages}}
+        Visit each link and create a brief summary of the prospect's interests in
+        our company, products, and services. In particular, I am interested
+        in the business problem that the prospect is trying to solve.
+
+  draft_email:
+    type: generate
+    inputs:
+      - activity: identify_prospect
+      - activity: summarize_interests
+    models:
+      - claude
+    parameters:
+      temperature: 0.8
+      prompt: |
+        Someone from {{identify_prospect.company.name}} visited our website. 
+        If a shorter version of this company name is used colloquially, use that shorter version.
+        
+        Here is some information about {{identify_prospect.company.name}}: 
+        {{identify_prospect}}
+        
+        Here is a summary of their interests based on browsing history: 
+        {{summarize_interests}} 
+        
+        Use this information to draft an effective prospecting email that an account executive can 
+        send to his or her contacts at the company to set up a sales discovery meeting.
+        
+        Remember, the key is to keep it professional, concise, focused, and personalized. 
+        Avoid generic sales pitches and aim to establish a connection based on their needs and interests.
+
+  save_answer:
+    type: write
+    inputs:
+      - activity: identify_prospect
+      - activity: summarize_interests
+      - activity: draft_email
+    parameters:
+      format: html
+      template: |
+        ## SALES BRIEF
+        
+        ### PROSPECT
+        **{{identify_prospect.company.name}}**<br/>
+        {{identify_prospect.geoLocation.province}}, 
+        {{identify_prospect.geoLocation.country_code}}
+        
+        ### ABOUT
+        {{identify_prospect.company.about}}
+        
+        ### BROWSING INTERESTS 
+        {{summarize_interests}} 
+        
+        ### EMAIL DRAFT
+        {{draft_email}}

@@ -1,0 +1,27 @@
+log:
+  level: "DEBUG"
+  format: "[%(asctime)s] [%(levelname)s] [%(name)s]: %(message)s"
+scheduler:
+  workers: 10
+providers:
+  openai:
+    key: ${OPENAI_API_KEY}
+    endpoint: https://api.openai.com/v1/
+  azure:
+    key: ${AZURE_API_KEY}
+    endpoint: ${AZURE_ENDPOINT}
+    deployment: ${AZURE_DEPLOYMENT}
+    version: ${AZURE_VERSION}
+  anthropic:
+    key: ${ANTHROPIC_API_KEY}
+    endpoint: https://api.anthropic.com/v1/
+  llava:
+    endpoint: http://localhost:8080
+tools:
+  web:
+    endpoint: https://customsearch.googleapis.com/customsearch/v1
+    cx: ${GOOGLE_CSE_CX}
+    key: ${GOOGLE_CSE_KEY}
+memory:
+  chromadb:
+    path: ./data

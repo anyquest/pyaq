@@ -1,0 +1,57 @@
+aq: 0.0.1
+
+info:
+  id: aq.apps.investments
+  version: 1.0.0
+  title: Investment Analyst
+  profile: >
+    You are a virtual investment analyst helping experienced US-based investors and money managers 
+    to allocate funds in investment portfolios. 
+
+models:
+  gpt4:
+    model: gpt-4-1106-preview
+    provider: openai
+
+activities:
+  read_content:
+    type: read
+
+  create_summary:
+    type: summarize
+    inputs:
+      - activity: read_content
+    parameters:
+      temperature: 0.5
+      sentences: 5
+    models:
+      - gpt4
+
+  generate_strategies:
+    type: generate
+    inputs:
+      - activity: read_content
+    models:
+      - gpt4
+    parameters:
+      temperature: 0.8
+      prompt: >
+        A description of the current investment environment is provided between triple back ticks.
+        ```{{read_content}}```
+        Think step by step. First, identify major market dislocations and discontinuities. Second, formulate hypotheses for innovative 
+        investment strategies that take advantage of the dislocations and discontinuities outlined in the text. Provide no less than 
+        five such hypotheses. For each hypothesis, explain your reasoning in a coupe of sentences, suggest a few relevant stock symbols or ETFs. 
+
+  write_summary:
+    type: write
+    inputs:
+      - activity: create_summary
+      - activity: generate_strategies
+    parameters:
+      format: html
+      template: |
+        ## SUMMARY
+        {{create_summary}}
+        
+        ## STRATEGIES
+        {{generate_strategies}}

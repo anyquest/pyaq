@@ -1,0 +1,10 @@
+venv
+log
+data
+out
+.idea
+.env
+__pycache__
+.ipynb_checkpoints
+.DS_Store
+

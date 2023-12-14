@@ -1,0 +1,78 @@
+aq: 0.0.1
+
+info:
+  id: aq.apps.rag
+  version: 1.0.0
+  title: Retrieval-augmented Generation Agent
+  profile: >
+    You are a chief investment officer at a large asset management firm.
+    Respond to questions accordingly.
+
+models:
+  claude:
+    model: claude-2.1
+    provider: anthropic
+
+memory:
+  vector:
+    type: chromadb
+    parameters:
+      chunk_size: 1000
+
+activities:
+  # STORE CONTENT IN AGENT'S MEMORY
+  read_content:
+    type: read
+
+  store_content:
+    type: store
+    memory:
+      - vector
+    inputs:
+      - activity: read_content
+
+  # ANSWER QUESTIONS USING INFO IN AGENT'S MEMORY
+  read_question:
+    type: read
+
+  retrieve_context:
+    type: retrieve
+    memory:
+      - vector
+    inputs:
+      - activity: read_question
+    parameters:
+      n_results: 3
+
+  answer_question:
+    type: generate
+    inputs:
+      - activity: read_question
+      - activity: retrieve_context
+    models:
+      - claude
+    parameters:
+      temperature: 0.5
+      prompt: |
+        Context:
+        {{retrieve_context}}
+        
+        Question:  
+        {{read_question}}
+
+  write_answer:
+    type: write
+    inputs:
+      - activity: read_question
+      - activity: answer_question
+    parameters:
+      format: html
+      template: |
+        ## QUESTION        
+        {{read_question}}
+        
+        ## ANSWER
+        {{answer_question}}
+    
+
+    
