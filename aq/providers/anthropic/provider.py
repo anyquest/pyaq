@@ -3,7 +3,7 @@ from typing import Dict, Any
 
 from pydantic import BaseModel
 
-from ..provider import BaseProvider
+from ..provider import BaseProvider, ProviderError
 from ..types import ChatCompletionRequest, ChatCompletionResponse, Choice, ChatCompletionMessage
 from ...http_client import AsyncHttpClient
 
@@ -27,7 +27,15 @@ class AnthropicProvider(BaseProvider):
         self._http_client = http_client
         self._logger = logging.getLogger(self.__class__.__name__)
 
+    @staticmethod
+    def _check_config(config: Dict[str, Any]) -> None:
+        required_keys = ['endpoint', 'key']
+        if not all(key in config for key in required_keys):
+            raise ProviderError("The Anthropic provider is not configured. Add settings to config.yml.")
+
     async def create_completion(self, request: ChatCompletionRequest) -> ChatCompletionResponse:
+        self._check_config(self._config)
+
         # Format the prompt
         system_prompts = []
         prompts = []

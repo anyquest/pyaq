@@ -51,6 +51,10 @@ and running
 ```
 > python3 --version 
 ```
+or 
+```
+> python --version 
+```
 
 ### Virtual Environment 
 
@@ -60,9 +64,21 @@ Create and activate the virtual Python environment:
 2. Change to the directory of this file 
 3. Run the following commands at the command prompt 
 
+Linux or Mac: 
+
 ```
 > python -m venv venv 
 > source venv/bin/activate
+> pip install poetry 
+> poetry install --no-root
+> pip install jupyter
+```
+
+Windows: 
+
+```
+> python -m venv venv 
+> venv\Scripts\activate
 > pip install poetry 
 > poetry install --no-root
 > pip install jupyter

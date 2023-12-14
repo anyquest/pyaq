@@ -1,4 +1,4 @@
-from .provider import BaseProvider
+from .provider import BaseProvider, ProviderError
 from .llava import LlavaProvider
 from .azure import AzureProvider
 from .openai import OpenAIProvider
@@ -11,5 +11,6 @@ __all__ = [
     "OpenAIProvider",
     "AzureProvider",
     "AnthropicProvider",
-    "LlavaProvider"
+    "LlavaProvider",
+    "ProviderError"
 ]
