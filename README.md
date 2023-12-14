@@ -16,7 +16,7 @@ Make sure to check out examples in the examples/apps directory:
 - rag.yml - answer a question using information in a pdf document
 - qna.yml - answer multiple questions by spawning several workers
 
-For more information visit us at https://anyquest.ai
+For more information visit us at https://anyquest.ai.
 
 By releasing AnyQuest PyAQ as open source, we hope to stimulate innovation in the broader generative AI community. 
 Until now, the focus of the community has been on building bigger and better models. 
