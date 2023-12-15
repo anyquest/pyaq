@@ -74,3 +74,9 @@ class ChatCompletionResponse(BaseModel):
     choices: List[Choice]
 
 
+class Error(BaseModel):
+    code: str
+    message: str
+
+
+

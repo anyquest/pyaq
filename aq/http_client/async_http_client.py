@@ -3,7 +3,7 @@ from typing import Dict, Any
 from urllib.parse import urlencode
 
 import httpx
-from tenacity import retry, stop_after_attempt, wait_exponential
+from tenacity import retry, stop_after_attempt, wait_random_exponential
 
 
 class AsyncHttpClient:
@@ -13,7 +13,7 @@ class AsyncHttpClient:
         logging.getLogger('httpcore').setLevel(logging.ERROR)
         logging.getLogger('httpx').setLevel(logging.ERROR)
 
-    @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=1, max=10))
+    @retry(stop=stop_after_attempt(5), wait=wait_random_exponential(min=1, max=60))
     async def post(self, url: str, headers: Dict[str, Any], data: Any, json=True) -> Any:
         async with httpx.AsyncClient() as ac:
             response = await ac.post(url, headers=headers, data=data, timeout=self.TIMEOUT)

@@ -8,7 +8,8 @@ from .chat import (
     Function,
     Tool,
     ResponseFormat,
-    ToolCall
+    ToolCall,
+    Error
 )
 
 __all__ = [
@@ -21,5 +22,6 @@ __all__ = [
     "Function",
     "Tool",
     "ResponseFormat",
-    "ToolCall"
+    "ToolCall",
+    "Error"
 ]
