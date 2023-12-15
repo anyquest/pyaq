@@ -8,7 +8,7 @@ Unlike interactive GPT chatbots and copilots, cognitive applications can run ent
 They do not sacrifice precision for speed and can run longer to process more data, use different types 
 of larger AI models, or launch long-running jobs via connected enterprise applications and robotic systems.
 
-Make sure to check out examples in the examples/apps directory:
+Make sure to check out sample apps in the examples/apps directory:
 
 - enrich.yml - enrich sales leads by searching the web
 - extract.yml - extract contact information from emails
