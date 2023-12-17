@@ -53,7 +53,7 @@ class GenerateActivity(BaseActivity):
                             "to accomplish your goal using the tools provided."))
 
             prompt_template = activity.parameters["prompt"]
-            prompt = self.render(prompt_template, inputs)
+            prompt = self.render_prompt(prompt_template, inputs)
             messages.append(ChatCompletionMessage(role="user", content=prompt))
 
             parts = []

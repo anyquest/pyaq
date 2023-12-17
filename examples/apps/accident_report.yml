@@ -1,0 +1,41 @@
+aq: 0.0.1
+
+info:
+  id: aq.apps.accident_report
+  version: 1.0.0
+  title: Accident Report Application
+  profile: >
+    You are an auto insurance adjuster. Your job is to assess the vehicle damage at the site of an accident.
+
+models:
+  gpt4v:
+    model: gpt-4-vision-preview
+    provider: openai
+
+activities:
+  read_image:
+    type: read
+
+  report_damage:
+    type: generate
+    inputs:
+      - activity: read_image
+    models:
+      - gpt4v
+    parameters:
+      temperature: 0.5
+      prompt: >
+        Provide a detailed report of the damage to the vehicle in the attached image.
+
+  write_answer:
+    type: write
+    inputs:
+      - activity: read_image
+      - activity: report_damage
+    parameters:
+      format: html
+      template: |
+        ## DAMAGE REPORT
+        ![Vehicle]({{read_image}})
+        
+        {{report_damage}}

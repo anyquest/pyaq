@@ -5,17 +5,20 @@ from typing import Dict, Any
 
 from .activity import BaseActivity, ActivityError
 from ..types import ActivityJob, JobState
-from .readers import PdfReader, FileReader
+from .readers import PdfReader, FileReader, ImageReader
 
 
 class ReadActivity(BaseActivity):
-    def __init__(self, pdf_reader: PdfReader, file_reader: FileReader):
+    def __init__(self, pdf_reader: PdfReader, file_reader: FileReader, image_reader: ImageReader):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._handlers = {
             "application/pdf": pdf_reader,
             "application/json": file_reader,
             "text/plain": file_reader,
-            "text/markdown": file_reader
+            "text/markdown": file_reader,
+            "image/jpeg": image_reader,
+            "image/jpg": image_reader,
+            "image/png": image_reader
         }
 
     async def perform(self, activity_job: ActivityJob, inputs: Dict[str, Any]) -> None:

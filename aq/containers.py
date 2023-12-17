@@ -18,7 +18,7 @@ from .activities import (
     FunctionActivity,
     ReturnActivity
 )
-from .activities.readers import PdfReader, FileReader
+from .activities.readers import PdfReader, FileReader, ImageReader
 from .providers import OpenAIProvider, AzureProvider, AnthropicProvider, LlavaProvider
 from .http_client import AsyncHttpClient
 from .providers import ProviderManager
@@ -94,11 +94,13 @@ class Container(containers.DeclarativeContainer):
 
     pdf_reader = providers.Singleton(PdfReader)
     file_reader = providers.Singleton(FileReader)
+    image_reader = providers.Singleton(ImageReader)
 
     read_activity = providers.Singleton(
         ReadActivity,
         file_reader=file_reader,
-        pdf_reader=pdf_reader)
+        pdf_reader=pdf_reader,
+        image_reader=image_reader)
 
     chromadb_repository = providers.Singleton(
         ChromaDbRepository,

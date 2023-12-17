@@ -14,9 +14,15 @@ class ToolCall(BaseModel):
     function: FunctionCall
 
 
+class Content(BaseModel):
+    type: Literal["text", "image_url"] = "text"
+    text: Optional[str] = None
+    image_url: Optional[str] = None
+
+
 class ChatCompletionMessage(BaseModel):
     role: str
-    content: Optional[str] = ""
+    content: Optional[str | List[Content]] = ""
     name: Optional[str] = None
     tool_call_id: Optional[str] = None
     tool_calls: Optional[List[ToolCall]] = None
@@ -77,6 +83,3 @@ class ChatCompletionResponse(BaseModel):
 class Error(BaseModel):
     code: str
     message: str
-
-
-
