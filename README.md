@@ -15,6 +15,7 @@ Make sure to check out sample apps in the examples/apps directory:
 - investments.yml - generate investment advice based on a market report
 - rag.yml - answer a question using information in a pdf document
 - qna.yml - answer multiple questions by spawning several workers
+- accident_report.yml - analyze the image of a vehicle and create a damage report
 
 For more information visit us at https://anyquest.ai.
 
