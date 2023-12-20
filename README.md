@@ -49,7 +49,7 @@ Here are just some ideas to explore with AnyQuest PyAQ:
 
 ### Operating System 
 
-These instructions were prepared for Linux and MacOS. Some modifications may be required on Windows.
+These instructions were prepared for Linux, MacOS, and Windows.
 
 ### Python 
 
