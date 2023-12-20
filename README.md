@@ -109,6 +109,8 @@ AZURE_ENDPOINT=<Azure endpoint>
 
 GOOGLE_CSE_CX=<Your Google Programmable Search Engine ID>
 GOOGLE_CSE_KEY=<Your Google Programmable Search Engine API Key>
+
+GEMINI_API_KEY=<Your Google Gemini API Key>
 ```
 
 The OpenAI API key is required since most examples depend on it. 
