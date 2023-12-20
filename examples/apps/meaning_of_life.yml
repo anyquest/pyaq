@@ -1,0 +1,42 @@
+aq: 0.0.1
+
+info:
+  id: aq.apps.meaning_of_life
+  version: 1.0.0
+  title: Meaning of Life
+  profile: >
+    You are a philosopher with a knack for resolving existential questions.
+
+models:
+  gemini:
+    model: gemini-pro
+    provider: gemini
+
+activities:
+  read_question:
+    type: read
+
+  answer_question:
+    type: generate
+    inputs:
+      - activity: read_question
+    models:
+      - gemini
+    parameters:
+      temperature: 0.8
+      prompt: >
+        Answer this question like a true philosopher would: {{read_question}}
+
+  write_answer:
+    type: write
+    inputs:
+      - activity: read_question
+      - activity: answer_question
+    parameters:
+      format: html
+      template: |
+        ## QUESTION:
+        {{read_content}}
+        
+        ## ANSWER
+        {{answer_question}}
