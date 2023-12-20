@@ -19,7 +19,7 @@ from .activities import (
     ReturnActivity
 )
 from .activities.readers import PdfReader, FileReader, ImageReader
-from .providers import OpenAIProvider, AzureProvider, AnthropicProvider, LlavaProvider
+from .providers import OpenAIProvider, AzureProvider, AnthropicProvider, LlavaProvider, GeminiProvider
 from .http_client import AsyncHttpClient
 from .providers import ProviderManager
 from .tools.web import WebTool
@@ -67,12 +67,19 @@ class Container(containers.DeclarativeContainer):
         http_client=http_client
     )
 
+    gemini_provider = providers.Singleton(
+        GeminiProvider,
+        config=config.providers.gemini,
+        http_client=http_client
+    )
+
     provider_manager = providers.Singleton(
         ProviderManager,
         openai_provider=openai_provider,
         azure_provider=azure_provider,
         anthropic_provider=anthropic_provider,
-        llava_provider=llava_provider
+        llava_provider=llava_provider,
+        gemini_provider=gemini_provider
     )
 
     web_tool = providers.Singleton(

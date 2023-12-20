@@ -36,7 +36,7 @@ activities:
       format: html
       template: |
         ## QUESTION:
-        {{read_content}}
+        {{read_question}}
         
         ## ANSWER
         {{answer_question}}

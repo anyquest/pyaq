@@ -15,6 +15,9 @@ providers:
   anthropic:
     key: ${ANTHROPIC_API_KEY}
     endpoint: https://api.anthropic.com/v1/
+  gemini:
+    key: ${GEMINI_API_KEY}
+    endpoint: https://generativelanguage.googleapis.com/v1beta/
   llava:
     endpoint: http://localhost:8080
 tools:

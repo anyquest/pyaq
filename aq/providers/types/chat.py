@@ -81,5 +81,5 @@ class ChatCompletionResponse(BaseModel):
 
 
 class Error(BaseModel):
-    code: str
+    code: str | int
     message: str

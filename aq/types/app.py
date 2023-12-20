@@ -27,6 +27,7 @@ class ToolType(Enum):
 class ModelProvider(Enum):
     ANY = "any"
     OPENAI = "openai"
+    GEMINI = "gemini"
     AZURE = "azure"
     ANTHROPIC = "anthropic"
     LLAVA = "llava"
