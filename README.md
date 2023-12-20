@@ -79,9 +79,8 @@ Linux or Mac:
 ```
 > python -m venv venv 
 > source venv/bin/activate
-> pip install poetry 
+> pip install poetry jupyter
 > poetry install --no-root
-> pip install jupyter
 ```
 
 Windows: 
@@ -89,9 +88,8 @@ Windows:
 ```
 > python -m venv venv 
 > venv\Scripts\activate
-> pip install poetry 
+> pip install poetry jupyter
 > poetry install --no-root
-> pip install jupyter
 ```
 
 ### API Keys
