@@ -31,7 +31,7 @@ class AnthropicProvider(BaseProvider):
     def _check_config(config: Dict[str, Any]) -> None:
         required_keys = ['endpoint', 'key']
         if not all(key in config for key in required_keys):
-            raise ProviderError("The Anthropic provider is not configured. Add settings to config.yml.")
+            raise ProviderError(400, "The Anthropic provider is not configured. Add settings to config.yml.")
 
     async def create_completion(self, request: ChatCompletionRequest) -> ChatCompletionResponse:
         self._check_config(self._config)
