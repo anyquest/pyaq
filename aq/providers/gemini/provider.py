@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Dict, Any, Optional, List, Literal
 
 from pydantic import BaseModel
@@ -8,11 +9,17 @@ from ..types import ChatCompletionRequest, ChatCompletionResponse, ChatCompletio
 from ...http_client import AsyncHttpClient
 
 
+class InlineData(BaseModel):
+    mimeType: str
+    data: str
+
+
 class Part(BaseModel):
     text: Optional[str] = None
+    inlineData: Optional[InlineData] = None
 
 
-class Message(BaseModel):
+class Content(BaseModel):
     role: Literal["user", "model"]
     parts: List[Part]
 
@@ -23,12 +30,12 @@ class GenerationConfig(BaseModel):
 
 
 class GeminiCompletionRequest(BaseModel):
-    contents: List[Message]
+    contents: List[Content]
     generationConfig: GenerationConfig
 
 
 class ResponseCandidate(BaseModel):
-    content: Message
+    content: Content
     finishReason: Literal["STOP"]
 
 
@@ -52,21 +59,34 @@ class GeminiProvider(BaseProvider):
         self._check_config(self._config)
 
         g_messages = []
-        role_messages = []
+        role_parts = []
         role = None
 
         for message in request.messages:
             message_role = message.role if message.role != "system" else "user"
             if role and message_role != role:
                 g_role = "user" if role == "user" else "model"
-                g_messages.append(Message(role=g_role, parts=[Part(text="\n".join(role_messages))]))
-                role_messages = []
+                g_messages.append(Content(role=g_role, parts=role_parts))
+                role_parts = []
             role = message_role
-            role_messages.append(message.content)
+            if isinstance(message.content, list):
+                for content in message.content:
+                    if content.type == "text":
+                        role_parts.append(Part(text=content.text))
+                    elif content.type == "image_url":
+                        match = re.match(r"data:(.*?);base64,(.*)", content.image_url)
+                        if match.groups():
+                            mime_type = match.group(1)
+                            data = match.group(2)
+                            role_parts.append(Part(inlineData=InlineData(mimeType=mime_type, data=data)))
+                    else:
+                        self._logger.error(f"Unknown content type {content.type}")
+            else:
+                role_parts.append(Part(text=message.content))
 
-        if role_messages:
+        if role_parts:
             g_role = "user" if role == "user" else "model"
-            g_messages.append(Message(role=g_role, parts=[Part(text="\n".join(role_messages))]))
+            g_messages.append(Content(role=g_role, parts=role_parts))
 
         g_config = GenerationConfig(temperature=request.temperature,
                                     maxOutputTokens=request.max_tokens)

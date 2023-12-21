@@ -8,9 +8,12 @@ info:
     You are an auto insurance adjuster. Your job is to assess the vehicle damage at the site of an accident.
 
 models:
-  gpt4v:
+  vision-model:
     model: gpt-4-vision-preview
     provider: openai
+#  vision-model:
+#    model: gemini-pro-vision
+#    provider: gemini
 
 activities:
   read_image:
@@ -21,11 +24,11 @@ activities:
     inputs:
       - activity: read_image
     models:
-      - gpt4v
+      - vision-model
     parameters:
       temperature: 0.5
       prompt: >
-        Provide a detailed report of the damage to the vehicle in the attached image.
+        Provide a detailed description of the damage to the vehicle in the attached image. 
 
   write_answer:
     type: write

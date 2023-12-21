@@ -82,14 +82,14 @@ class BaseActivity:
     def render_prompt(template: str, inputs: Dict[str, Any]) -> str | List[Content]:
         text = BaseActivity.render(template, inputs)
 
-        images = []
+        contents = []
         for key in inputs:
             if isinstance(inputs[key], str) and inputs[key].startswith("data:image"):
-                images.append(Content(type="image_url", image_url=inputs[key]))
+                contents.append(Content(type="image_url", image_url=inputs[key]))
 
-        if len(images) > 0:
-            images.insert(0, Content(type="text", text=text))
-            return images
+        if len(contents) > 0:
+            contents.insert(0, Content(type="text", text=text))
+            return contents
         else:
             return text
 
