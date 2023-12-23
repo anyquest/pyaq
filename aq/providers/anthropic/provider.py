@@ -75,7 +75,7 @@ class AnthropicProvider(BaseProvider):
                 choice = Choice(index=0, message=message, finish_reason=finish_reason)
                 return ChatCompletionResponse(id="", object="object", created=0, choices=[choice])
             else:
-                raise ProviderError(500, "Could not parse response")
+                raise ProviderError(500, "Could not parse the response")
 
     @staticmethod
     def _check_config(config: Dict[str, Any]) -> None:
