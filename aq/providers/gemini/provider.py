@@ -109,7 +109,12 @@ class GeminiProvider(BaseProvider):
             choices = []
             g_response = GeminiCompletionResponse(**data)
             for g_candidate in g_response.candidates:
-                finish_reason = "stop" if g_candidate.finishReason == "STOP" else g_candidate.finishReason
+                if g_candidate.finishReason == "STOP":
+                    finish_reason = "stop"
+                elif g_candidate.finishReason == "MAX_TOKENS":
+                    finish_reason = "length"
+                else:
+                    finish_reason = g_candidate.finishReason
                 if g_candidate.content and g_candidate.content.parts:
                     message = ChatCompletionMessage(role="assistant", content=g_candidate.content.parts[0].text)
                     choices.append(Choice(index=0, message=message, finish_reason=finish_reason))
