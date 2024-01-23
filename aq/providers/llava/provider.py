@@ -4,7 +4,7 @@ from typing import Dict, Any
 from pydantic import BaseModel
 
 from ..provider import BaseProvider
-from ..types import ChatCompletionRequest, ChatCompletionResponse, Choice, ChatCompletionMessage
+from ..types import ChatCompletionRequest, ChatCompletionResponse, Choice, ChatCompletionMessage, Usage
 from ...http_client import AsyncHttpClient
 
 
@@ -61,6 +61,6 @@ class LlavaProvider(BaseProvider):
             finish_reason = "length"
         message = ChatCompletionMessage(role="assistant", content=a_response.content)
         choice = Choice(index=0, message=message, finish_reason=finish_reason)
-        response = ChatCompletionResponse(id="", object="object", created=0, choices=[choice])
+        response = ChatCompletionResponse(id="", object="object", created=0, choices=[choice], usage=Usage())
 
         return response

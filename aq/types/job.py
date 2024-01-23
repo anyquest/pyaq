@@ -13,12 +13,18 @@ class JobState(Enum):
     ERROR = 4
 
 
+class Usage:
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+
+
 class AppJob:
     id: str
     caller: Optional['ActivityJob']
     app: App
     context: Dict
     state: JobState
+    usage: Usage
 
     def __init__(self, app: App):
         self.id = str(uuid.uuid4())
@@ -26,6 +32,7 @@ class AppJob:
         self.context = {}
         self.caller = None
         self.state = JobState.CREATED
+        self.usage = Usage()
 
     @property
     def finished(self) -> bool:
@@ -39,6 +46,7 @@ class ActivityJob:
     state: JobState
     output: str
     output_type: str = "text/plain"
+    usage: Usage
 
     def __init__(self, activity_name: str, app_job: AppJob):
         self.id = str(uuid.uuid4())
@@ -46,6 +54,7 @@ class ActivityJob:
         self.app_job = app_job
         self.state = JobState.CREATED
         self.output = ""
+        self.usage = Usage()
 
     @property
     def finished(self) -> bool:

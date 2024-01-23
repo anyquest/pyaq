@@ -5,7 +5,7 @@ from typing import Dict, Any, Optional, List, Literal
 from pydantic import BaseModel
 
 from ..provider import BaseProvider, ProviderError
-from ..types import ChatCompletionRequest, ChatCompletionResponse, ChatCompletionMessage, Choice, Error
+from ..types import ChatCompletionRequest, ChatCompletionResponse, ChatCompletionMessage, Choice, Error, Usage
 from ...http_client import AsyncHttpClient
 
 
@@ -35,8 +35,8 @@ class GeminiCompletionRequest(BaseModel):
 
 
 class ResponseCandidate(BaseModel):
-    content: Content
-    finishReason: Literal["STOP"]
+    content: Optional[Content]
+    finishReason: Literal["STOP", "MAX_TOKENS"]
 
 
 class GeminiCompletionResponse(BaseModel):
@@ -119,4 +119,4 @@ class GeminiProvider(BaseProvider):
                     message = ChatCompletionMessage(role="assistant", content=g_candidate.content.parts[0].text)
                     choices.append(Choice(index=0, message=message, finish_reason=finish_reason))
 
-            return ChatCompletionResponse(id="", object="object", created=0, choices=choices)
+            return ChatCompletionResponse(id="", object="object", created=0, choices=choices, usage=Usage())

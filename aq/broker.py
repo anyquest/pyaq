@@ -30,5 +30,10 @@ class SemanticBroker:
         await self._job_scheduler.schedule(activity_job, {"file_path": file_path})
         await self._job_scheduler.join()
 
+        usage = app_job.usage
+        self._logger.debug(f"prompt_tokens={usage.prompt_tokens}, completion_tokens={usage.completion_tokens}")
+
         return self._job_manager.get_outputs(app_job)
+
+
 

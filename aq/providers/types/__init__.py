@@ -10,7 +10,8 @@ from .chat import (
     ResponseFormat,
     ToolCall,
     Error,
-    Content
+    Content,
+    Usage
 )
 
 __all__ = [
@@ -25,5 +26,6 @@ __all__ = [
     "ResponseFormat",
     "ToolCall",
     "Error",
-    "Content"
+    "Content",
+    "Usage"
 ]

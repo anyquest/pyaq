@@ -93,6 +93,10 @@ class JobScheduler:
             handler = self._activity_handlers.get(activity_type)
             if handler:
                 await handler.perform(item.job, item.inputs)
+
+                app_job.usage.completion_tokens += item.job.usage.completion_tokens
+                app_job.usage.prompt_tokens += item.job.usage.prompt_tokens
+
                 if item.job.state == JobState.SUCCESS:
                     # Pop the app job stack if it's a return activity
                     if activity_type == ActivityType.RETURN and app_job.caller:

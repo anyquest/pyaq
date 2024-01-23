@@ -4,7 +4,7 @@ from typing import Dict, Any, Literal, List
 from pydantic import BaseModel
 
 from ..provider import BaseProvider, ProviderError
-from ..types import ChatCompletionRequest, ChatCompletionResponse, Choice, ChatCompletionMessage, Content, Error
+from ..types import ChatCompletionRequest, ChatCompletionResponse, Choice, ChatCompletionMessage, Content, Error, Usage
 from ...http_client import AsyncHttpClient
 
 
@@ -71,9 +71,10 @@ class AnthropicProvider(BaseProvider):
             a_response = AnthropicCompletionResponse(**data)
             finish_reason = "stop" if a_response.stop_reason == "end_turn" else a_response.stop_reason
             if a_response.content:
+                usage = Usage()
                 message = ChatCompletionMessage(role="assistant", content=a_response.content[0].text)
                 choice = Choice(index=0, message=message, finish_reason=finish_reason)
-                return ChatCompletionResponse(id="", object="object", created=0, choices=[choice])
+                return ChatCompletionResponse(id="", object="object", created=0, choices=[choice], usage=usage)
             else:
                 raise ProviderError(500, "Could not parse the response")
 

@@ -56,6 +56,7 @@ class GenerateActivity(BaseActivity):
             prompt = self.render_prompt(prompt_template, inputs)
             messages.append(ChatCompletionMessage(role="user", content=prompt))
 
+            usage = activity_job.usage
             parts = []
             start_time = time.perf_counter()
             provider = self._provider_manager.get_provider(model.provider)
@@ -71,6 +72,9 @@ class GenerateActivity(BaseActivity):
                 )
 
                 response = await provider.create_completion(request)
+
+                usage.prompt_tokens += response.usage.prompt_tokens
+                usage.completion_tokens += response.usage.completion_tokens
 
                 choice: Choice = response.choices[0]
                 message: ChatCompletionMessage = choice.message

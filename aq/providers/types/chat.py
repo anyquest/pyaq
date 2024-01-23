@@ -73,13 +73,21 @@ class Choice(BaseModel):
     finish_reason: Optional[str] = None
 
 
+class Usage(BaseModel):
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_tokens: int = 0
+
+
 class ChatCompletionResponse(BaseModel):
     id: str
     object: str
     created: int
     choices: List[Choice]
+    usage: Usage
 
 
 class Error(BaseModel):
     code: str | int
     message: str
+
