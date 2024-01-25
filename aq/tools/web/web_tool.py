@@ -87,6 +87,8 @@ class WebTool(BaseTool):
             if not search_response.hits:
                 self._logger.debug("Search produced no results")
 
+            search_response.hits = search_response.hits[:4]
+
             return search_response
         except Exception as e:
             self._logger.error(f"Searched failed with error: {e}")

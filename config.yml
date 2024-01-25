@@ -2,7 +2,7 @@ log:
   level: "DEBUG"
   format: "[%(asctime)s] [%(levelname)s] [%(name)s]: %(message)s"
 scheduler:
-  workers: 10
+  workers: 5
 providers:
   openai:
     key: ${OPENAI_API_KEY}
