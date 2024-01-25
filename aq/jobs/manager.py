@@ -67,8 +67,15 @@ class JobManager:
                         inputs = []
                         for match in expr.find(json.loads(val)):
                             if isinstance(match.value, list):
+                                batch = []
                                 for input_value in match.value:
-                                    inputs.append({**inputs_for_activity, activity_input.activity: input_value})
+                                    if len(batch) == activity_input.batch_size:
+                                        inputs.append({**inputs_for_activity, activity_input.activity: batch})
+                                        batch = [input_value]
+                                    else:
+                                        batch.append(input_value)
+                                if len(batch):
+                                    inputs.append({**inputs_for_activity, activity_input.activity: batch})
                         return inputs
                     except Exception as e:
                         self._logger.error(f"Failed to parse a map expression {e}")

@@ -2,6 +2,7 @@ import json
 import re
 import secrets
 import string
+import itertools
 from typing import Dict, Any, List
 
 from jinja2 import Template
@@ -43,7 +44,17 @@ class BaseActivity:
         rval = {}
         for key, val in inputs.items():
             try:
-                rval[key] = [json.loads(elem) for elem in val] if isinstance(val, list) else json.loads(val)
+                if isinstance(val, list):
+                    result = []
+                    for elem in val:
+                        json_val = json.loads(elem)
+                        if isinstance(json_val, list):
+                            result.extend(json_val)
+                        else:
+                            result.append(json_val)
+                    rval[key] = result
+                else:
+                    rval[key] = json.loads(val)
             except json.JSONDecodeError:
                 rval[key] = val
         if len(rval.keys()) == 1:

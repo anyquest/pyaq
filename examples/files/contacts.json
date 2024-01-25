@@ -1,11 +1,9 @@
-{
-  "Contact" : [ {
-    "name" : "Helen Fu Thomas",
-    "title" : "Founder",
-    "company" : "AnyQuest, Inc."
-  }, {
-    "name" : "Dmitri Tcherevik",
-    "title" : "Founder",
-    "company" : "AnyQuest, Inc."
-  } ]
-}
+[{
+  "name" : "Helen Fu Thomas",
+  "title" : "Founder",
+  "company" : "AnyQuest, Inc."
+}, {
+  "name" : "Dmitri Tcherevik",
+  "title" : "Founder",
+  "company" : "AnyQuest, Inc."
+}]

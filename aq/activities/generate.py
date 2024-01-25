@@ -41,7 +41,7 @@ class GenerateActivity(BaseActivity):
             if json_format:
                 messages.append(ChatCompletionMessage(
                     role="system",
-                    content="Provide your response as a JSON object."))
+                    content="Provide your response in JSON format."))
             else:
                 messages.append(ChatCompletionMessage(
                     role="system",
@@ -95,8 +95,14 @@ class GenerateActivity(BaseActivity):
                         break
 
             activity_job.state = JobState.SUCCESS
-            activity_job.output = "\n\n".join(parts)
-            activity_job.output_type = "text/markdown"
+            if json_format:
+                activity_job.output_type = "application/json"
+                json_obj = [json.loads(part) for part in parts] if len(parts) > 1 else json.loads(parts[0])
+                json_obj = json_obj[next(iter(json_obj))] if isinstance(json_obj, dict) and len(json_obj) == 1 else json_obj
+                activity_job.output = json.dumps(json_obj)
+            else:
+                activity_job.output = "\n\n".join(parts)
+                activity_job.output_type = "text/markdown"
 
         except Exception as e:
             traceback.print_exc() 

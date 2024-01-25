@@ -22,9 +22,8 @@ providers:
     endpoint: http://localhost:8080
 tools:
   web:
-    endpoint: https://customsearch.googleapis.com/customsearch/v1
-    cx: ${GOOGLE_CSE_CX}
-    key: ${GOOGLE_CSE_KEY}
+    endpoint: https://api.ydc-index.io/search
+    key: ${YOU_API_KEY}
 memory:
   chromadb:
     path: ./data

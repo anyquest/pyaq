@@ -59,6 +59,7 @@ class MemoryDef(BaseModel):
 class ActivityInput(BaseModel):
     activity: str
     map: Optional[str] = None
+    batch_size: Optional[int] = 1
 
 
 class Activity(BaseModel):

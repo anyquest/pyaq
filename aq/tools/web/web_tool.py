@@ -12,12 +12,12 @@ from ..tool import BaseTool, ToolError
 
 class SearchResult(BaseModel):
     title: str
-    snippet: str
-    link: str
-
+    snippets: List[str]
+    description: str
+    url: str
 
 class SearchResponse(BaseModel):
-    items: Optional[List[SearchResult]] = None
+    hits: Optional[List[SearchResult]] = None
 
 
 class WebTool(BaseTool):
@@ -77,15 +77,20 @@ class WebTool(BaseTool):
         self._logger.debug(f"query = {query}")
         try:
             response = await self._http_client.get(self._config["endpoint"], {
-                "cx": self._config["cx"],
-                "key": self._config["key"],
-                "q": query
+                "query": query
             }, {
                 "Accept": "application/json",
+                "X-API-Key": self._config["key"]
             })
-            return SearchResponse(**response)
+
+            search_response = SearchResponse(**response)
+            if not search_response.hits:
+                self._logger.debug("Search produced no results")
+
+            return search_response
         except Exception as e:
             self._logger.error(f"Searched failed with error: {e}")
+            return SearchResponse()
 
     async def summarize(self, link: str) -> str:
         self._logger.debug(f"link = {link}")

@@ -24,7 +24,7 @@ activities:
     type: generate
     inputs:
       - activity: read_content
-        map: $.Contact
+        map: $
     tools:
       - websearch
     models:
