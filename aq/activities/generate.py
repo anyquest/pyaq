@@ -1,13 +1,15 @@
 import json
 import logging
 import time
-from typing import Dict, Any, List
+import traceback
+from typing import Any, Dict, List
 
-from .activity import BaseActivity, ActivityError
 from ..providers import ProviderManager
-from ..providers.types import ChatCompletionMessage, ChatCompletionRequest, Choice, Tool, ResponseFormat, ToolCall
+from ..providers.types import (ChatCompletionMessage, ChatCompletionRequest,
+                               Choice, ResponseFormat, Tool, ToolCall)
 from ..tools import ToolManager
-from ..types import ActivityJob, JobState, Activity, App
+from ..types import Activity, ActivityJob, App, JobState
+from .activity import ActivityError, BaseActivity
 
 
 class GenerateActivity(BaseActivity):
@@ -28,7 +30,7 @@ class GenerateActivity(BaseActivity):
             model = app.models[activity.models[0]]
 
             temperature = float(activity.parameters.get("temperature", model.parameters.get("temperature", 0.5)))
-            max_tokens = int(activity.parameters.get("max_words", model.parameters.get("max_words", 500))*4/3)
+            max_tokens = int(activity.parameters.get("max_tokens", model.parameters.get("max_tokens", 500)))
 
             messages = []
             profile = app.info.profile
@@ -97,6 +99,7 @@ class GenerateActivity(BaseActivity):
             activity_job.output_type = "text/markdown"
 
         except Exception as e:
+            traceback.print_exc() 
             self._logger.error(e)
             activity_job.state = JobState.ERROR
             activity_job.output = str(e)

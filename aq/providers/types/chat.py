@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict, Literal
+from typing import Dict, List, Literal, Optional
 
 from pydantic import BaseModel
 
@@ -88,6 +88,6 @@ class ChatCompletionResponse(BaseModel):
 
 
 class Error(BaseModel):
-    code: str | int
+    code: Optional[str | int] = None
     message: str
 

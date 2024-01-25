@@ -1,9 +1,9 @@
+import asyncio
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
 from urllib.parse import urlencode
 
 import httpx
-import asyncio
 
 
 class AsyncHttpClient:
@@ -23,8 +23,7 @@ class AsyncHttpClient:
                 if json:
                     json_response = response.json()
                     if "error" in json_response and "code" in json_response["error"]:
-                        code = int(json_response["error"]["code"])
-                        if code == 429:
+                        if "code" in json_response["error"] and json_response["error"]["code"] == 429:
                             self._logger.error("Received a 429 error. Retrying ...")
                             retry_count += 1
                             await asyncio.sleep(5*(2**retry_count))

@@ -1,13 +1,13 @@
 import logging
-from typing import Dict, Any, List
+from typing import Any, Dict, List, Optional
 
 from bs4 import BeautifulSoup
 from pydantic import BaseModel
 
-from ..tool import BaseTool, ToolError
 from ...http_client import AsyncHttpClient
 from ...providers.types import Tool
 from ...types import ToolDef
+from ..tool import BaseTool, ToolError
 
 
 class SearchResult(BaseModel):
@@ -17,7 +17,7 @@ class SearchResult(BaseModel):
 
 
 class SearchResponse(BaseModel):
-    items: List[SearchResult]
+    items: Optional[List[SearchResult]] = None
 
 
 class WebTool(BaseTool):
