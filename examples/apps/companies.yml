@@ -1,0 +1,87 @@
+aq: 0.0.1
+
+info:
+  id: aq.apps.enrich_companies
+  version: 1.0.0
+  title: Company Info Enrichment Agent
+  profile: >
+    You are virtual research assistant. You can search the web to find more information about businesses.
+
+models:
+  gpt4:
+    model: gpt-4-1106-preview
+    provider: openai
+
+tools:
+  websearch:
+    type: web
+
+activities:
+  read_data:
+    type: read
+
+  enrich_companies:
+    type: generate
+    inputs:
+      - activity: read_data
+        map: $
+        batch_size: 10
+    tools:
+      - websearch
+    models:
+      - gpt4
+    parameters:
+      temperature: 0.5
+      max_tokens: 4096
+      format: json
+      prompt: >
+        Here is JSON list with objects representing companies. 
+        Each company has two properties: 'Company' and 'Location'.
+        
+        Your task is to enrich this data with additional information about the companies.
+        
+        In particular, you need to add two new properties, 'Sector' and 'Industry', and 
+        populate them with the information about the sector and industry of the company 
+        using the GICS taxonomy.
+
+        Also, you need to add a 'Website' property with the URL of the company website, 
+        and a 'Description' property with a short description of the company. 
+
+        Finally, add the 'Size' property with the values of 'Small', 'Medium', or 'Large'
+        depending on the estimated number of employees of the company.
+        
+        Use the web search tool to find the information. If you cannot find the exact 
+        match, make your best guess based on the information you can find. 
+        
+        Leave the properties blank for companies where you cannot make a guess. 
+        
+        Use this JSON format for your output:  
+        
+        [{
+          "Company": "Apple",
+          "Location: "Cupertino, California",
+          "Sector": "Information Technology",
+          "Industry": "Consumer Electronics",
+          "Website": "https://www.apple.com/",
+          "Description": "Apple Inc. is an American multinational technology company headquartered in Cupertino, California, that designs, develops, and sells consumer electronics, computer software, and online services.",
+          "Size": "Large"
+        }, {
+          "Company": "Oracle",
+          "Location": "Austin, Texas",
+          "Sector": "Information Technology",
+          "Industry": "Application Software",
+          "Website": "https://www.oracle.com/",
+          "Description": "Oracle Corporation is an American multinational computer technology corporation headquartered in Austin, Texas. The company sells database software and technology, cloud engineered systems, and enterprise software products—particularly its own brands of database management systems.",
+          "Size": "Large"
+        }]
+        
+        Here is input data in JSON:
+        {{read_data}}                
+
+  save_contacts:
+    type: write
+    inputs:
+      - activity: enrich_companies
+    parameters:
+      format: json
+
