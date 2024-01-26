@@ -62,7 +62,10 @@ class GenerateActivity(BaseActivity):
             parts = []
             start_time = time.perf_counter()
             provider = self._provider_manager.get_provider(model.provider)
+
             json_validation_attempts = 1
+            json_output = None
+
             for x in range(self.MAX_ITERATIONS):
                 request = ChatCompletionRequest(
                     model=model.model,
@@ -95,26 +98,25 @@ class GenerateActivity(BaseActivity):
                                            f"in {int(time.perf_counter() - start_time)} sec.")
                         if json_format:
                             try:
-                                json.loads(parts[-1])
-                                break
-                            except:
+                                json_output = json.loads(parts[-1])
+                            except json.JSONDecodeError:
                                 if json_validation_attempts > 0:
                                     json_validation_attempts -= 1
                                     prompt = ("The result is not valid JSON. "
                                               "Please provide your response in JSON format.")
                                     messages.append(ChatCompletionMessage(role="user", content=prompt))
+                                    continue
                                 else:
                                     self._logger.error(f"Got invalid JSON from the model: {parts[-1]}")
                                     raise ActivityError("Invalid JSON returned by the model")
-                        else:
-                            break
+
+                        break
 
             activity_job.state = JobState.SUCCESS
             if json_format:
                 activity_job.output_type = "application/json"
-                json_obj = json.loads(parts[-1])
-                json_obj = json_obj[next(iter(json_obj))] if isinstance(json_obj, dict) and len(json_obj) == 1 else json_obj
-                activity_job.output = json.dumps(json_obj)
+                json_output = json_output[next(iter(json_output))] if isinstance(json_output, dict) and len(json_output) == 1 else json_output
+                activity_job.output = json.dumps(json_output)
             else:
                 activity_job.output = "\n\n".join(parts)
                 activity_job.output_type = "text/markdown"
