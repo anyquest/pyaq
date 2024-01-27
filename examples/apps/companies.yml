@@ -35,7 +35,7 @@ activities:
       max_tokens: 4096
       format: json
       prompt: >
-        Here is JSON list with objects representing companies. 
+        You are a virtual assistant helping a marketing team segment a list of companies.  
         Each company has two properties: 'Company' and 'Location'.
         
         Your task is to enrich this data with additional information about the companies.
@@ -54,8 +54,18 @@ activities:
         match, make your best guess based on the information you can find. 
         
         Leave the properties blank for companies where you cannot make a guess. 
+
+        Sample input data: 
+
+        [{
+          "Company": "Apple",
+          "Location": "Cupertino, California"
+        }, {
+          "Company": "Oracle",
+          "Location": "Austin, Texas"
+        }]
         
-        Use this JSON format for your output:  
+        Sample output data:  
         
         [{
           "Company": "Apple",
@@ -75,8 +85,9 @@ activities:
           "Size": "Large"
         }]
         
-        Here is input data in JSON:
-        {{read_data}}                
+        Follow these instructions to enrich the data:
+
+        {{read_data}}    
 
   save_contacts:
     type: write
