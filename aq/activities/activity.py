@@ -2,14 +2,13 @@ import json
 import re
 import secrets
 import string
-import itertools
-from typing import Dict, Any, List
+from typing import Dict, List
 
 from jinja2 import Template
 from jsonpath_ng import parse
 
-from ..types import ActivityJob
 from ..providers.types import Content
+from ..types import ActivityJob
 
 
 def jsonpath(value: str, path: str) -> str:
@@ -55,6 +54,13 @@ class BaseActivity:
 
     @staticmethod
     def render(template: str, inputs: Dict[str, str]) -> str:
+        inputs_json = {}
+        for key, val in inputs.items():
+            try:
+                inputs_json[key] = json.loads(val)
+            except json.JSONDecodeError:
+                inputs_json[key] = val
+
         # Call a function to process path expressions
         str_template = template
         expr = r'{{([^.\[]+)([.\[])(.*)}}'
@@ -73,7 +79,8 @@ class BaseActivity:
         jinja_template.globals.update({
             "jsonpath": jsonpath
         })
-        return jinja_template.render(inputs)
+
+        return jinja_template.render(inputs_json)
 
     @staticmethod
     def render_prompt(template: str, inputs: Dict[str, str]) -> str | List[Content]:
