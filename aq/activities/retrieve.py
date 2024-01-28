@@ -11,7 +11,7 @@ class RetrieveActivity(BaseActivity):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._memory_manager = memory_manager
 
-    async def perform(self, activity_job: ActivityJob, inputs: Dict[str, Any]) -> None:
+    async def perform(self, activity_job: ActivityJob, inputs: Dict[str, str]) -> None:
         try:
             app = activity_job.app_job.app
             if not app.memory:

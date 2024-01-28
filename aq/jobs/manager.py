@@ -1,4 +1,5 @@
 import json
+import itertools
 import logging
 from typing import Dict, List, Any
 
@@ -54,10 +55,21 @@ class JobManager:
 
     def get_inputs_for_activity(self, app_job: AppJob, activity: Activity) -> List[Dict[str, Any]]:
         inputs_for_activity = {}
+
         if activity.inputs:
             for activity_input in activity.inputs:
-                job_outputs = [job.output for job in self.activity_jobs[app_job.id].get(activity_input.activity, [])]
-                inputs_for_activity[activity_input.activity] = job_outputs if len(job_outputs) > 1 else job_outputs[0]
+                input_jobs = [job for job in self.activity_jobs[app_job.id].get(activity_input.activity, [])]
+
+                if len(input_jobs) > 0 and input_jobs[0].output_type == "application/json":
+                    # reduce json inputs 
+                    json_inputs = [json.loads(job.output) for job in input_jobs]
+                    if isinstance(json_inputs[0], list):
+                        inputs_for_activity[activity_input.activity] = json.dumps(list(itertools.chain(*json_inputs)))
+                    else:
+                        inputs_for_activity[activity_input.activity] = json.dumps(json_inputs);
+                else:
+                    # reduce text inputs 
+                    inputs_for_activity[activity_input.activity] = "\n".join([job.output for job in input_jobs])
 
             for activity_input in activity.inputs:
                 if activity_input.map:
@@ -70,12 +82,12 @@ class JobManager:
                                 batch = []
                                 for input_value in match.value:
                                     if len(batch) == activity_input.batch_size:
-                                        inputs.append({**inputs_for_activity, activity_input.activity: batch})
+                                        inputs.append({**inputs_for_activity, activity_input.activity: json.dumps(batch) if len(batch) > 1 else batch[0]})
                                         batch = [input_value]
                                     else:
                                         batch.append(input_value)
                                 if len(batch):
-                                    inputs.append({**inputs_for_activity, activity_input.activity: batch})
+                                    inputs.append({**inputs_for_activity, activity_input.activity: json.dumps(batch) if len(batch) > 1 else batch[0]})
                         return inputs
                     except Exception as e:
                         self._logger.error(f"Failed to parse a map expression {e}")

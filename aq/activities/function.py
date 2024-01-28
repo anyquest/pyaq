@@ -9,7 +9,7 @@ class FunctionActivity(BaseActivity):
     def __init__(self):
         self._logger = logging.getLogger(self.__class__.__name__)
 
-    async def perform(self, activity_job: ActivityJob, inputs: Dict[str, Any]) -> None:
+    async def perform(self, activity_job: ActivityJob, inputs: Dict[str, str]) -> None:
         activity_job.state = JobState.SUCCESS
         activity_job.output = self.merge_inputs(inputs)
         activity_job.output_type = "text/plain"
@@ -19,7 +19,7 @@ class ReturnActivity(BaseActivity):
     def __init__(self):
         self._logger = logging.getLogger(self.__class__.__name__)
 
-    async def perform(self, activity_job: ActivityJob, inputs: Dict[str, Any]) -> None:
+    async def perform(self, activity_job: ActivityJob, inputs: Dict[str, str]) -> None:
         try:
             activity_job.state = JobState.SUCCESS
             activity_job.output = self.merge_inputs_json(inputs)

@@ -20,7 +20,7 @@ class GenerateActivity(BaseActivity):
         self._provider_manager = provider_manager
         self._tool_manager = tool_manager
 
-    async def perform(self, activity_job: ActivityJob, inputs: Dict[str, Any]) -> None:
+    async def perform(self, activity_job: ActivityJob, inputs: Dict[str, str]) -> None:
         try:
             app = activity_job.app_job.app
             activity = app.activities[activity_job.activity_name]

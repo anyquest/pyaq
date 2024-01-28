@@ -21,7 +21,7 @@ class ReadActivity(BaseActivity):
             "image/png": image_reader
         }
 
-    async def perform(self, activity_job: ActivityJob, inputs: Dict[str, Any]) -> None:
+    async def perform(self, activity_job: ActivityJob, inputs: Dict[str, str]) -> None:
         try:
             file_path = inputs.get("file_path")
             if not file_path or not os.path.exists(file_path):
