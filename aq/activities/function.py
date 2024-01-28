@@ -11,8 +11,8 @@ class FunctionActivity(BaseActivity):
 
     async def perform(self, activity_job: ActivityJob, inputs: Dict[str, str]) -> None:
         activity_job.state = JobState.SUCCESS
-        activity_job.output = self.merge_inputs(inputs)
-        activity_job.output_type = "text/plain"
+        activity_job.output = self.merge_inputs_json(inputs)
+        activity_job.output_type = "application/json"
 
 
 class ReturnActivity(BaseActivity):
