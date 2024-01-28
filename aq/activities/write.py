@@ -40,7 +40,7 @@ class WriteActivity(BaseActivity):
 
             # Collate the inputs
             output_format = activity.parameters.get("format", "md")
-            template = activity.parameters.get("template", None)
+            template = activity.parameters.get("template", "")
             if template:
                 text = self.render(template, inputs)
             elif output_format == "json":
@@ -48,14 +48,27 @@ class WriteActivity(BaseActivity):
             else:
                 text = self.merge_inputs(inputs)
 
+            # Compute the file prefix based on the original file name
+            original_file_path = activity_job.app_job.context.get("file_path", "")
+            if original_file_path:
+                base_name = os.path.basename(original_file_path)
+                file_prefix, _ = os.path.splitext(base_name)
+            else:
+                file_prefix = "out"
+
             # Apply formatting
             if output_format == "html":
                 text = self.HTML_TEMPLATE % markdown.markdown(text, tab_length=2)
 
             # Write content to file
-            file_name = activity.parameters.get("filename") or os.path.splitext(os.path.basename(activity_job.app_job.context.get("file_path", "")))[0] or "out"
-            file_path = os.path.join("./out", file_name)
+            file_name = activity.parameters.get("filename", self.generate_temp_filename(file_prefix, output_format))
 
+            # Create the out directory
+            path = "./out"
+            if not os.path.exists(path):
+                os.makedirs(path)
+
+            file_path = os.path.join(path, file_name)
             async with aiofiles.open(file_path, mode='w', encoding='utf-8') as file:
                 await file.write(text)
 
