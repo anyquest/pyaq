@@ -115,10 +115,13 @@ class JobScheduler:
                     # Schedule next jobs
                     next_activities = self._job_manager.get_next_activities(activity_job)
                     for next_activity in next_activities:
-                        all_inputs = self._job_manager.get_inputs_for_activity(app_job, app.activities[next_activity])
-                        for job_inputs in all_inputs:
-                            next_job = self._job_manager.create_activity_job(app_job, next_activity)
-                            await self.schedule(next_job, job_inputs)
+                        activity = app.activities[next_activity]
+                        all_inputs = self._job_manager.get_inputs_for_activity(app_job, activity)
+                        count = activity.parameters.get("count", 1)
+                        for _ in range(count):
+                            for job_inputs in all_inputs:
+                                next_job = self._job_manager.create_activity_job(app_job, next_activity)
+                                await self.schedule(next_job, job_inputs)
                 else:
                     self._logger.error(f"{item.job.activity_name} failed with error {item.job.output}")
             else:
