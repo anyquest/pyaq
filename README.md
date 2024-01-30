@@ -106,8 +106,7 @@ AZURE_API_VERSION=<Azure API version>
 AZURE_DEPLOYMENT=<Azure Model deployment>
 AZURE_ENDPOINT=<Azure endpoint>
 
-GOOGLE_CSE_CX=<Your Google Programmable Search Engine ID>
-GOOGLE_CSE_KEY=<Your Google Programmable Search Engine API Key>
+YOU_API_KEY=<Your You.com web search API key>
 ```
 
 The OpenAI API key is required since most examples depend on it. 
