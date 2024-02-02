@@ -74,7 +74,7 @@ class OpenAIProvider(BaseProvider):
                 else:
                     return ChatCompletionResponse(**response)
             else:
-                if tokens >= self._limits.max_tokens:
+                if tokens >= self._limits.tokens_per_minute:
                     raise ProviderError(400, "Request exceeds maximum token limit")
                 
                 attempts -= 1
