@@ -1,4 +1,5 @@
 import logging
+import tiktoken
 from typing import Any, Dict, List, Optional
 
 from bs4 import BeautifulSoup
@@ -27,6 +28,8 @@ class WebTool(BaseTool):
         self._config = config
         self._http_client = http_client
         self._logger = logging.getLogger(self.__class__.__name__)
+        self._encoding = tiktoken.get_encoding("cl100k_base")
+
 
     async def get_metadata(self, tool_def: ToolDef) -> List[Tool]:
         return [
@@ -108,7 +111,10 @@ class WebTool(BaseTool):
         text = soup.get_text()
 
         lines = (line.strip() for line in text.splitlines())
-        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))        
+        
         text = '\n'.join(chunk for chunk in chunks if chunk)
+        if len(text) > 2000:
+            text = text[:2000] + "..."
 
         return text

@@ -57,7 +57,7 @@ class OpenAIProvider(BaseProvider):
         self._check_config(self._config)
 
         attempts = 360
-        tokens = self.estimate_tokens(request)
+        tokens = self.estimate_tokens(request)        
         while attempts > 0:
             if self._limits.consume(tokens):
                 headers = {
@@ -74,6 +74,9 @@ class OpenAIProvider(BaseProvider):
                 else:
                     return ChatCompletionResponse(**response)
             else:
+                if tokens >= self._limits.max_tokens:
+                    raise ProviderError(400, "Request exceeds maximum token limit")
+                
                 attempts -= 1
                 sleep_time = 10
                 self._logger.debug(f"Insufficient token or request capacity. Sleeping {sleep_time} seconds")

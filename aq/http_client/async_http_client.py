@@ -7,7 +7,7 @@ import httpx
 
 
 class AsyncHttpClient:
-    TIMEOUT = 120
+    TIMEOUT = 240
 
     def __init__(self):
         logging.getLogger('httpcore').setLevel(logging.ERROR)
