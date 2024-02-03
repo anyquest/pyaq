@@ -10,12 +10,13 @@ from ..types import ChatCompletionRequest, ChatCompletionResponse, Error
 
 
 class ModelLimits:
-    def __init__(self, requests_per_minute: int = 0, tokens_per_minute: int = 0):
+    def __init__(self, requests_per_minute: int = 0, tokens_per_minute: int = 0, max_tokens: int = 128000):
         self.requests_per_minute = requests_per_minute
         self.tokens_per_minute = tokens_per_minute
         self.last_update_time = time.time()
         self.available_request_capacity = self.requests_per_minute
         self.available_token_capacity = self.tokens_per_minute
+        self.max_tokens = max_tokens
 
     def update_capacity(self):
         current_time = time.time()
@@ -45,7 +46,7 @@ class OpenAIProvider(BaseProvider):
         self._http_client = http_client
         self._logger = logging.getLogger(self.__class__.__name__)
         self._encoding = tiktoken.get_encoding("cl100k_base")
-        self._limits = ModelLimits(requests_per_minute=5000, tokens_per_minute=160000)
+        self._limits = ModelLimits(requests_per_minute=5000, tokens_per_minute=160000, max_tokens=128000)
 
     @staticmethod
     def _check_config(config: Dict[str, Any]) -> None:
@@ -74,7 +75,7 @@ class OpenAIProvider(BaseProvider):
                 else:
                     return ChatCompletionResponse(**response)
             else:
-                if tokens >= self._limits.tokens_per_minute:
+                if tokens >= self._limits.max_tokens:
                     raise ProviderError(400, "Request exceeds maximum token limit")
                 
                 attempts -= 1
