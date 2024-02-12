@@ -24,6 +24,7 @@ from .http_client import AsyncHttpClient
 from .providers import ProviderManager
 from .tools.web import WebTool
 from .tools.rest import RestTool
+from .tools.news import NewsTool
 from .tools import ToolManager
 from .memory import MemoryManager
 from .memory.chromadb import ChromaDbRepository
@@ -88,6 +89,12 @@ class Container(containers.DeclarativeContainer):
         http_client=http_client
     )
 
+    news_tool = providers.Singleton(
+        NewsTool,
+        config=config.tools.news,
+        http_client=http_client
+    )
+
     rest_tool = providers.Singleton(
         RestTool,
         http_client=http_client
@@ -96,7 +103,8 @@ class Container(containers.DeclarativeContainer):
     tool_manager = providers.Singleton(
         ToolManager,
         web_tool=web_tool,
-        rest_tool=rest_tool
+        rest_tool=rest_tool,
+        news_tool=news_tool
     )
 
     pdf_reader = providers.Singleton(PdfReader)

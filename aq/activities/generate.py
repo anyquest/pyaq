@@ -3,6 +3,7 @@ import logging
 import time
 import traceback
 from typing import Any, Dict, List
+from datetime import date
 
 from ..providers import ProviderManager
 from ..providers.types import (ChatCompletionMessage, ChatCompletionRequest,
@@ -46,6 +47,10 @@ class GenerateActivity(BaseActivity):
                 messages.append(ChatCompletionMessage(
                     role="system",
                     content="Use the tab length of two spaces when formatting nested lists in markdown."))
+
+            messages.append(ChatCompletionMessage(
+                role="system",
+                content=f"Today is {date.today()}."))
 
             tools = await self.get_tools(app, activity)
             if tools:

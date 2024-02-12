@@ -1,47 +1,49 @@
 import logging
-import tiktoken
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from bs4 import BeautifulSoup
 from pydantic import BaseModel
 
+from ..tool import BaseTool, ToolError
 from ...http_client import AsyncHttpClient
 from ...providers.types import Tool
 from ...types import ToolDef
-from ..tool import BaseTool, ToolError
 
 
-class SearchResult(BaseModel):
-    title: str
-    snippets: List[str]
+class NewsResult(BaseModel):
+    age: str
     description: str
+    title: str
     url: str
 
-class SearchResponse(BaseModel):
-    hits: Optional[List[SearchResult]] = None
+
+class NewsResults(BaseModel):
+    results: List[NewsResult]
 
 
-class WebTool(BaseTool):
+class NewsResponse(BaseModel):
+    news: NewsResults
+
+
+class NewsTool(BaseTool):
     USER_AGENT = "Mozilla/5.0"
 
     def __init__(self, config: Dict[str, Any], http_client: AsyncHttpClient):
         self._config = config
         self._http_client = http_client
         self._logger = logging.getLogger(self.__class__.__name__)
-        self._encoding = tiktoken.get_encoding("cl100k_base")
-
 
     async def get_metadata(self, tool_def: ToolDef) -> List[Tool]:
         return [
             Tool(**{
                 "function": {
                     "name": "search",
-                    "description": "Searches the Internet and returns a list of matching web pages.",
+                    "description": "Searches the news stream and returns a list of matching news stories.",
                     "parameters": {
                         "required": ["query"],
                         "properties": {
                             "query": {
-                                "description": "A search expression."
+                                "description": "A news search expression."
                             }
                         }
                     }
@@ -50,12 +52,12 @@ class WebTool(BaseTool):
             Tool(**{
                 "function": {
                     "name": "summarize",
-                    "description": "Summarizes the contents of a web page.",
+                    "description": "Summarizes a news story.",
                     "parameters": {
                         "required": ["link"],
                         "properties": {
                             "link": {
-                                "description": "A universal resource locator (URL) pointing to a web page."
+                                "description": "A universal resource locator (URL) pointing to a news story."
                             }
                         }
                     }
@@ -67,7 +69,7 @@ class WebTool(BaseTool):
         if function_name == "search":
             if "query" not in arguments:
                 raise ToolError("The query argument is required for search")
-            response = await self.search(arguments["query"])
+            response = await self.search(arguments)
             return response.model_dump_json()
         elif function_name == "summarize":
             if "link" not in arguments:
@@ -76,26 +78,25 @@ class WebTool(BaseTool):
         else:
             raise ToolError(f"Unknown function {function_name}")
 
-    async def search(self, query: str) -> SearchResponse:
+    async def search(self, arguments: Dict[str, Any]) -> NewsResponse:
+        query = arguments["query"]
         self._logger.debug(f"query = {query}")
         try:
             response = await self._http_client.get(self._config["endpoint"], {
-                "query": query
+                "q": query
             }, {
-                "Accept": "application/json",
-                "X-API-Key": self._config["key"]
+               "Accept": "application/json",
+               "X-API-Key": self._config["key"]
             })
 
-            search_response = SearchResponse(**response)
-            if not search_response.hits:
-                self._logger.debug("Search produced no results")
+            news_response = NewsResponse(**response)
+            if not news_response.news.results:
+                self._logger.debug("News search produced no results")
 
-            search_response.hits = search_response.hits[:4]
-
-            return search_response
+            return news_response
         except Exception as e:
-            self._logger.error(f"Web search failed with error: {e}")
-            return SearchResponse()
+            self._logger.error(f"News search failed with error: {e}")
+            return NewsResponse()
 
     async def summarize(self, link: str) -> str:
         self._logger.debug(f"link = {link}")
@@ -111,8 +112,8 @@ class WebTool(BaseTool):
         text = soup.get_text()
 
         lines = (line.strip() for line in text.splitlines())
-        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))        
-        
+        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+
         text = '\n'.join(chunk for chunk in chunks if chunk)
         if len(text) > 2000:
             text = text[:2000] + "..."

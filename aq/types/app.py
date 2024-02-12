@@ -22,6 +22,7 @@ class ToolType(Enum):
     ANY = "any"
     WEB = "web"
     REST = "rest"
+    NEWS = "news"
 
 
 class ModelProvider(Enum):
