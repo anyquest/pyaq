@@ -1,5 +1,7 @@
 import logging
 import tiktoken
+import asyncio
+
 from typing import Any, Dict, List, Optional
 
 from bs4 import BeautifulSoup
@@ -67,38 +69,47 @@ class WebTool(BaseTool):
         if function_name == "search":
             if "query" not in arguments:
                 raise ToolError("The query argument is required for search")
-            response = await self.search(arguments["query"])
+            response = await self.search(arguments, tool_def)
             return response.model_dump_json()
         elif function_name == "summarize":
             if "link" not in arguments:
                 raise ToolError("The link argument is required for summarize")
-            return await self.summarize(arguments["link"])
+            return await self.summarize(arguments["link"], tool_def)
         else:
             raise ToolError(f"Unknown function {function_name}")
 
-    async def search(self, query: str) -> SearchResponse:
-        self._logger.debug(f"query = {query}")
+    async def search(self, arguments: Dict[str, Any], tool_def: ToolDef) -> SearchResponse:
+        query = arguments["query"]
+        num_results = tool_def.parameters.get("results", 3)
+        self._logger.debug(f"query = {query}, results={num_results}")
         try:
-            response = await self._http_client.get(self._config["endpoint"], {
-                "query": query
-            }, {
-                "Accept": "application/json",
-                "X-API-Key": self._config["key"]
-            })
+            retry_count = 0
+            while retry_count < 5:
+                response = await self._http_client.get(self._config["endpoint"], {
+                    "query": query,
+                    "num_web_results": num_results
+                }, {
+                    "Accept": "application/json",
+                    "X-API-Key": self._config["key"]
+                })
 
-            search_response = SearchResponse(**response)
-            if not search_response.hits:
-                self._logger.debug("Search produced no results")
+                search_response = SearchResponse(**response)
+                if not search_response.hits:
+                    self._logger.debug("Search produced no results. Retrying ...")
+                    retry_count += 1
+                    await asyncio.sleep(5*(2**retry_count))
 
-            search_response.hits = search_response.hits[:4]
+                return search_response
 
-            return search_response
         except Exception as e:
             self._logger.error(f"Web search failed with error: {e}")
             return SearchResponse()
 
-    async def summarize(self, link: str) -> str:
+    async def summarize(self, link: str, tool_def: ToolDef) -> str:
         self._logger.debug(f"link = {link}")
+
+        max_tokens = tool_def.parameters.get("max_tokens", 1000)
+        max_characters = max_tokens * 4
 
         if not link.startswith(("http://", "https://")):
             link = 'https://' + link.strip("/")
@@ -114,7 +125,7 @@ class WebTool(BaseTool):
         chunks = (phrase.strip() for line in lines for phrase in line.split("  "))        
         
         text = '\n'.join(chunk for chunk in chunks if chunk)
-        if len(text) > 2000:
-            text = text[:2000] + "..."
+        if len(text) > max_characters:
+            text = text[:max_characters] + "..."
 
         return text

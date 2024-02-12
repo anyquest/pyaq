@@ -1,7 +1,6 @@
 import logging
 from typing import Any, Dict, List
 
-from bs4 import BeautifulSoup
 from pydantic import BaseModel
 
 from ..tool import BaseTool, ToolError
@@ -44,20 +43,12 @@ class NewsTool(BaseTool):
                         "properties": {
                             "query": {
                                 "description": "A news search expression."
-                            }
-                        }
-                    }
-                }
-            }),
-            Tool(**{
-                "function": {
-                    "name": "summarize",
-                    "description": "Summarizes a news story.",
-                    "parameters": {
-                        "required": ["link"],
-                        "properties": {
-                            "link": {
-                                "description": "A universal resource locator (URL) pointing to a news story."
+                            },
+                            "count": {
+                                "description": "The max number of web results to return, must be under 20."
+                            },
+                            "offset": {
+                                "description": "The offset, in multiples of count. I.e if count = 5, and offset=1, the API will return results 5-10. The maximum value for offset is 9."
                             }
                         }
                     }
@@ -71,19 +62,19 @@ class NewsTool(BaseTool):
                 raise ToolError("The query argument is required for search")
             response = await self.search(arguments)
             return response.model_dump_json()
-        elif function_name == "summarize":
-            if "link" not in arguments:
-                raise ToolError("The link argument is required for summarize")
-            return await self.summarize(arguments["link"])
         else:
             raise ToolError(f"Unknown function {function_name}")
 
     async def search(self, arguments: Dict[str, Any]) -> NewsResponse:
         query = arguments["query"]
-        self._logger.debug(f"query = {query}")
+        count = arguments.get("count", 20)
+        offset = arguments.get("offset", 0)
+        self._logger.debug(f"query = {query}, count={count}, offset={offset}")
         try:
             response = await self._http_client.get(self._config["endpoint"], {
-                "q": query
+                "q": query,
+                "count": count,
+                "offset": offset
             }, {
                "Accept": "application/json",
                "X-API-Key": self._config["key"]
@@ -98,24 +89,3 @@ class NewsTool(BaseTool):
             self._logger.error(f"News search failed with error: {e}")
             return NewsResponse()
 
-    async def summarize(self, link: str) -> str:
-        self._logger.debug(f"link = {link}")
-
-        if not link.startswith(("http://", "https://")):
-            link = 'https://' + link.strip("/")
-
-        html = await self._http_client.get(link, {}, {
-            "User-Agent": self.USER_AGENT
-        }, json=False)
-
-        soup = BeautifulSoup(html, features="html.parser")
-        text = soup.get_text()
-
-        lines = (line.strip() for line in text.splitlines())
-        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-
-        text = '\n'.join(chunk for chunk in chunks if chunk)
-        if len(text) > 2000:
-            text = text[:2000] + "..."
-
-        return text
