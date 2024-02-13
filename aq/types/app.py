@@ -13,6 +13,7 @@ class ActivityType(Enum):
     SUMMARIZE = "summarize"
     EXTRACT = "extract"
     GENERATE = "generate"
+    MERGE = "merge"
     FUNCTION = "function"
     CALL = "call"
     RETURN = "return"

@@ -1,6 +1,6 @@
 import logging
 
-from typing import List, Dict
+from typing import List, Dict, Any
 
 import yaml
 
@@ -14,7 +14,7 @@ class SemanticBroker:
         self._job_scheduler = job_scheduler
         self._logger = logging.getLogger(self.__class__.__name__)
 
-    async def run(self, app_file: str, activity_name: str, file_path: str) -> Dict[str, List[str]]:
+    async def run(self, app_file: str, activity_name: str, file_path: str = None, inputs: Dict[str, Any] = None) -> Dict[str, List[str]]:
         # Load the app definition
         with open(app_file) as def_file:
             app_def = yaml.safe_load(def_file)
@@ -25,9 +25,12 @@ class SemanticBroker:
         app_job = self._job_manager.create_app_job(app)
         activity_job = self._job_manager.create_activity_job(app_job, activity_name)
 
+        # Format job inputs
+        job_inputs = {"file_path": file_path} if file_path else inputs
+
         # Launch this job with the file as an input
         await self._job_scheduler.start_workers()
-        await self._job_scheduler.schedule(activity_job, {"file_path": file_path})
+        await self._job_scheduler.schedule(activity_job, job_inputs)
         await self._job_scheduler.join()
 
         usage = app_job.usage

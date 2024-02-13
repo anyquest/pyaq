@@ -3,34 +3,14 @@ import os
 from typing import Dict, Any
 
 import aiofiles
-import markdown
 
-from .activity import BaseActivity
+from .merge import MergeActivity
 from ..types import ActivityJob, JobState
 
 
-class WriteActivity(BaseActivity):
-    HTML_TEMPLATE = """<html>
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <style>
-        .content {
-            width: 80%%;
-            margin: auto;
-            line-height: 1.4rem;
-            font-family: Helvetica, Arial, sans-serif;
-            font-size: 0.9rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="content">
-        %s
-    </div>
-</body>
-</html>"""
-
+class WriteActivity(MergeActivity):
     def __init__(self):
+        super().__init__()
         self._logger = logging.getLogger(self.__class__.__name__)
 
     async def perform(self, activity_job: ActivityJob, inputs: Dict[str, Any]) -> None:
@@ -38,15 +18,7 @@ class WriteActivity(BaseActivity):
             app = activity_job.app_job.app
             activity = app.activities[activity_job.activity_name]
 
-            # Collate the inputs
-            output_format = activity.parameters.get("format", "md")
-            template = activity.parameters.get("template", "")
-            if template:
-                text = self.render(template, inputs)
-            elif output_format == "json":
-                text = self.merge_inputs_json(inputs, indent=2)
-            else:
-                text = self.merge_inputs(inputs)
+            await super().perform(activity_job, inputs)
 
             # Compute the file prefix based on the original file name
             original_file_path = activity_job.app_job.context.get("file_path", "")
@@ -56,12 +28,19 @@ class WriteActivity(BaseActivity):
             else:
                 file_prefix = "out"
 
-            # Apply formatting
-            if output_format == "html":
-                text = self.HTML_TEMPLATE % markdown.markdown(text, tab_length=2)
+            if activity_job.output_type == "application/json":
+                ext = "json"
+            elif activity_job.output_type == "text/markdown":
+                ext = "md"
+            elif activity_job.output_type == "text/html":
+                ext = "html"
+            elif activity_job.output_type == "text/plain":
+                ext = "txt"
+            else:
+                ext = "out"
 
             # Write content to file
-            file_name = activity.parameters.get("filename", self.generate_temp_filename(file_prefix, output_format))
+            file_name = activity.parameters.get("filename", self.generate_temp_filename(file_prefix, ext))
 
             # Create the out directory
             path = "./out"
@@ -70,7 +49,7 @@ class WriteActivity(BaseActivity):
 
             file_path = os.path.join(path, file_name)
             async with aiofiles.open(file_path, mode='w', encoding='utf-8') as file:
-                await file.write(text)
+                await file.write(activity_job.output)
 
             activity_job.state = JobState.SUCCESS
             activity_job.output = file_path

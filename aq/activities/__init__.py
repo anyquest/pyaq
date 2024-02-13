@@ -8,6 +8,7 @@ from .store import StoreActivity
 from .retrieve import RetrieveActivity
 from .function import FunctionActivity
 from .function import ReturnActivity
+from .merge import MergeActivity
 
 __all__ = [
     "ReadActivity",
@@ -19,5 +20,6 @@ __all__ = [
     "StoreActivity",
     "RetrieveActivity",
     "FunctionActivity",
-    "ReturnActivity"
+    "ReturnActivity",
+    "MergeActivity"
 ]

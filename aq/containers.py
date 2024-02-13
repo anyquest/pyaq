@@ -6,7 +6,6 @@ from dependency_injector import containers, providers
 from dotenv import load_dotenv, find_dotenv
 
 from .broker import SemanticBroker
-from .jobs import JobManager, JobScheduler
 from .activities import (
     ReadActivity,
     WriteActivity,
@@ -16,8 +15,10 @@ from .activities import (
     StoreActivity,
     RetrieveActivity,
     FunctionActivity,
-    ReturnActivity
+    ReturnActivity,
+    MergeActivity
 )
+from .jobs import JobManager, JobScheduler
 from .activities.readers import PdfReader, FileReader, ImageReader
 from .providers import OpenAIProvider, AzureProvider, AnthropicProvider, LlavaProvider, GeminiProvider
 from .http_client import AsyncHttpClient
@@ -137,6 +138,7 @@ class Container(containers.DeclarativeContainer):
         memory_manager=memory_manager
     )
 
+    merge_activity = providers.Singleton(MergeActivity)
     write_activity = providers.Singleton(WriteActivity)
 
     summarize_activity = providers.Singleton(
@@ -173,7 +175,8 @@ class Container(containers.DeclarativeContainer):
         store_activity=store_activity,
         retrieve_activity=retrieve_activity,
         function_activity=function_activity,
-        return_activity=return_activity
+        return_activity=return_activity,
+        merge_activity=merge_activity
     )
 
     broker = providers.Singleton(

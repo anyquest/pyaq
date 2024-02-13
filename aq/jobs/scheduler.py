@@ -13,7 +13,8 @@ from ..activities import (
     StoreActivity,
     RetrieveActivity,
     FunctionActivity,
-    ReturnActivity
+    ReturnActivity,
+    MergeActivity
 )
 from ..types import ActivityType, ActivityJob, JobState
 
@@ -32,7 +33,7 @@ class JobScheduler:
                  read_activity: ReadActivity, write_activity: WriteActivity,
                  summarize_activity: SummarizeActivity, generate_activity: GenerateActivity,
                  extract_activity: ExtractActivity, store_activity: StoreActivity, retrieve_activity: RetrieveActivity,
-                 function_activity: FunctionActivity, return_activity: ReturnActivity):
+                 function_activity: FunctionActivity, return_activity: ReturnActivity, merge_activity: MergeActivity):
         self._config = config
 
         self._logger = logging.getLogger(self.__class__.__name__)
@@ -51,7 +52,8 @@ class JobScheduler:
             ActivityType.STORE: store_activity,
             ActivityType.RETRIEVE: retrieve_activity,
             ActivityType.FUNCTION: function_activity,
-            ActivityType.RETURN: return_activity
+            ActivityType.RETURN: return_activity,
+            ActivityType.MERGE: merge_activity
         }
 
     async def start_workers(self):
