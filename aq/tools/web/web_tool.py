@@ -84,7 +84,7 @@ class WebTool(BaseTool):
         self._logger.debug(f"query = {query}, results={num_results}")
         try:
             retry_count = 0
-            while retry_count < 5:
+            while retry_count < 3:
                 response = await self._http_client.get(self._config["endpoint"], {
                     "query": query,
                     "num_web_results": num_results
