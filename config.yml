@@ -24,6 +24,9 @@ tools:
   web:
     endpoint: https://api.ydc-index.io/search
     key: ${YOU_API_KEY}
+  news:
+    endpoint: https://api.ydc-index.io/news
+    key: ${YOU_API_KEY}
 memory:
   chromadb:
     path: ./data

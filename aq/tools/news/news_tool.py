@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -21,7 +21,7 @@ class NewsResults(BaseModel):
 
 
 class NewsResponse(BaseModel):
-    news: NewsResults
+    news: Optional[NewsResults] = None
 
 
 class NewsTool(BaseTool):
