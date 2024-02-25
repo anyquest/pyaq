@@ -5,15 +5,20 @@ from typing import Dict, Any
 
 from .activity import BaseActivity, ActivityError
 from ..types import ActivityJob, JobState
-from .readers import PdfReader, FileReader, ImageReader
+from .readers import PdfReader, FileReader, ImageReader, YamlReader
 
 
 class ReadActivity(BaseActivity):
-    def __init__(self, pdf_reader: PdfReader, file_reader: FileReader, image_reader: ImageReader):
+    def __init__(self, pdf_reader: PdfReader, file_reader: FileReader, image_reader: ImageReader, yaml_reader: YamlReader):
         self._logger = logging.getLogger(self.__class__.__name__)
+
+        mimetypes.add_type("text/yaml", ".yaml")        
+        mimetypes.add_type("text/yaml", ".yml")        
+
         self._handlers = {
             "application/pdf": pdf_reader,
             "application/json": file_reader,
+            "text/yaml": yaml_reader,
             "text/plain": file_reader,
             "text/markdown": file_reader,
             "image/jpeg": image_reader,

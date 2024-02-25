@@ -19,7 +19,7 @@ from .activities import (
     MergeActivity
 )
 from .jobs import JobManager, JobScheduler
-from .activities.readers import PdfReader, FileReader, ImageReader
+from .activities.readers import PdfReader, FileReader, ImageReader, YamlReader
 from .providers import OpenAIProvider, AzureProvider, AnthropicProvider, LlavaProvider, GeminiProvider
 from .http_client import AsyncHttpClient
 from .providers import ProviderManager
@@ -111,12 +111,14 @@ class Container(containers.DeclarativeContainer):
     pdf_reader = providers.Singleton(PdfReader)
     file_reader = providers.Singleton(FileReader)
     image_reader = providers.Singleton(ImageReader)
+    yaml_reader = providers.Singleton(YamlReader)
 
     read_activity = providers.Singleton(
         ReadActivity,
         file_reader=file_reader,
         pdf_reader=pdf_reader,
-        image_reader=image_reader)
+        image_reader=image_reader,
+        yaml_reader=yaml_reader)
 
     chromadb_repository = providers.Singleton(
         ChromaDbRepository,
