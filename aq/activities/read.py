@@ -1,11 +1,11 @@
-import mimetypes
 import logging
+import mimetypes
 import os
-from typing import Dict, Any
+from typing import Dict
 
-from .activity import BaseActivity, ActivityError
 from ..types import ActivityJob, JobState
-from .readers import PdfReader, FileReader, ImageReader, YamlReader
+from .activity import ActivityError, BaseActivity
+from .readers import FileReader, ImageReader, PdfReader, YamlReader
 
 
 class ReadActivity(BaseActivity):
@@ -14,6 +14,7 @@ class ReadActivity(BaseActivity):
 
         mimetypes.add_type("text/yaml", ".yaml")        
         mimetypes.add_type("text/yaml", ".yml")        
+        mimetypes.add_type("text/markdown", ".md")        
 
         self._handlers = {
             "application/pdf": pdf_reader,
