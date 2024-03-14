@@ -1,0 +1,76 @@
+aq: 0.0.1
+
+info:
+  id: aq.apps.metacode
+  version: 1.0.0
+  title: PyAQ Script Generation Agent 
+  profile: >
+    You are a business analyst trained in PyAQ. You can analyze business problems and 
+    generate PyAQ scripts to solve them.
+
+models:
+  gpt-4:
+    model: gpt-4-0125-preview
+    provider: openai
+
+memory:
+  vector:
+    type: chromadb
+    parameters:
+      chunk_size: 30000
+
+activities:
+  # STORE CONTENT IN AGENT'S MEMORY
+  read_content:
+    type: read
+
+  store_content:
+    type: store
+    memory:
+      - vector
+    inputs:
+      - activity: read_content
+
+  # COMPLETE ASSIGNMENT USING INFO IN AGENT'S MEMORY
+  read_assignment:
+    type: read
+
+  retrieve_context:
+    type: retrieve
+    memory:
+      - vector
+    inputs:
+      - activity: read_assignment
+    parameters:
+      n_results: 3
+
+  solve_problem:
+    type: generate
+    inputs:
+      - activity: read_assignment
+      - activity: retrieve_context
+    models:
+      - gpt-4
+    parameters:
+      temperature: 0.8
+      max_tokens: 4096
+      prompt: |
+        Here is an information to help you write scripts in PyAQ:
+        {{retrieve_context}}
+        
+        Your assignment is to write a PyAQ script to solve the following problem: 
+        {{read_assignment}}
+
+        Produce only the PyAQ script to solve the problem. 
+        Do not include anything else in your output.                
+
+  write_answer:
+    type: write
+    inputs:
+      - activity: solve_problem
+    parameters:
+      template: |
+        {{solve_problem}}
+
+
+    

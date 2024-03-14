@@ -36,6 +36,8 @@ class WriteActivity(MergeActivity):
                 ext = "html"
             elif activity_job.output_type == "text/plain":
                 ext = "txt"
+            elif activity_job.output_type == "text/yaml":
+                ext = "yml"
             else:
                 ext = "out"
 

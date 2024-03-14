@@ -43,7 +43,10 @@ class BaseActivity:
             except json.JSONDecodeError:
                 rval[key] = val
         if len(rval.keys()) == 1:
-            return json.dumps(next(iter(rval.values())), indent=indent)
+            value = next(iter(rval.values()))
+            if isinstance(value, list) and len(value) == 1:
+                value = value[0]
+            return json.dumps(value, indent=indent)
         else:
             return json.dumps(rval, indent=indent)
 

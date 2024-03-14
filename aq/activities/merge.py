@@ -2,6 +2,8 @@ import logging
 from typing import Dict, Any
 
 import markdown
+import yaml
+import json
 
 from .activity import BaseActivity
 from ..types import ActivityJob, JobState
@@ -45,6 +47,10 @@ class MergeActivity(BaseActivity):
             elif output_format == "json":
                 text = self.merge_inputs_json(inputs, indent=2)
                 output_type = "application/json"
+            elif output_format == "yaml":
+                text = self.merge_inputs_json(inputs)
+                text = yaml.dump(json.loads(text), default_flow_style=False)
+                output_type = "text/yaml"
             else:
                 text = self.merge_inputs(inputs)
                 output_type = "text/markdown"

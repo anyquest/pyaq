@@ -1,0 +1,3 @@
+Read PyAQ getting started guide and write a PyAQ script that extracts contact information 
+from inputs and for each contact searches the web to find the URL of their LinkedIn profile. 
+Save the results in JSON format. 
